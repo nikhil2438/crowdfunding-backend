@@ -5,14 +5,12 @@ const PaymentModel = require("../Models/Payment");
 const donationModel = require("../Models/donation");
 const mongoose = require("mongoose");
 
-const invoice = require("../Certificates/generateCertificate");
+const invoice = require("../Certificates/GenerateCertificate");
 
 const instance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
-
-
 
 // Create Order
 exports.createOrder = async (req, res) => {
@@ -23,11 +21,9 @@ exports.createOrder = async (req, res) => {
       receipt: "donation_rcpt_" + Date.now(),
     };
     const order = await instance.orders.create(options);
-  
 
     res.status(200).json({ success: true, order });
   } catch (error) {
-  
     res.status(500).json({ success: false, error });
   }
 };
@@ -68,7 +64,6 @@ exports.verifyPayment = async (req, res) => {
   let isCommitted = false;
 
   try {
-    
     const payment = await PaymentModel.create(
       [
         {
@@ -82,9 +77,6 @@ exports.verifyPayment = async (req, res) => {
       ],
       { session }
     );
-
-   
-    
 
     const donation = await donationModel.create(
       [
@@ -102,11 +94,10 @@ exports.verifyPayment = async (req, res) => {
       { session }
     );
 
-    
     await session.commitTransaction();
     // session.endSession();
-isCommitted = true;
-    
+    isCommitted = true;
+
     invoice(
       donation[0].FullName,
       donation[0].amount,
@@ -119,7 +110,7 @@ isCommitted = true;
       message: "Payment verified and donation saved successfully!",
       donation: donation[0],
     });
-   } catch (err) {
+  } catch (err) {
     if (!isCommitted) {
       try {
         await session.abortTransaction();
