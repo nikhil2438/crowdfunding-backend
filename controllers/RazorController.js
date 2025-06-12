@@ -6,7 +6,7 @@ const donationModel = require("../Models/donation");
 const mongoose = require("mongoose");
 
 const invoice = require("../Certificates/GenerateCertificate");
-console.log(invoice);
+console.log("invoice", invoice);
 
 const instance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
